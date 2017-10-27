@@ -328,3 +328,51 @@ void city::move(){
 
 	if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
 }
+
+
+recorrido::recorrido() {
+	Coste = 0;
+}
+
+
+void recorrido::add(int x, int y) {
+	std_vector<int> aux = {x, y};
+	Camino.push_back(aux);
+	Coste++;
+}
+
+
+bool recorrido::existe(int x, int y) {
+	bool existe = false;
+	for(int i = 0; i < Camino.size(); i++)
+		if((Camino[i][0] == x) && (Camino[i][1] == y))
+			existe = true;
+
+	return existe;
+}
+
+
+bool recorrido::operator<(const recorrido& rec) const {
+	return (Coste < rec.coste);
+}
+
+
+bool recorrido::operator>(const recorrido& rec) const {
+        return (Coste > rec.coste);
+}
+
+
+bool recorrido::operator==(const recorrido& rec) const {
+	bool iguales = true;
+	for(int i = 0; i < Camino.size(); i++)
+                if((Camino[i][0] != rec.Camino[i][0]) || (Camino[i][1] != rec.Camino[i][1]))
+                        iguales = false;
+
+	return iguales;
+}
+
+
+
+
+
+

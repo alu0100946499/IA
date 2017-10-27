@@ -67,6 +67,21 @@ public:
 };
 
 
+class recorrido {
+	std::vector<std::vector<int> > Camino;
+	int Coste;
+
+public:
+
+	recorrido();
+	void add(int, int);
+	bool existe(int, int);
+
+	bool operator<(const recorrido&) const;
+	bool operator>(const recorrido&) const;
+	bool operator==(const recorrido&) const;
+}
+
 
 
 #endif
