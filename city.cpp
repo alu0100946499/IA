@@ -67,8 +67,8 @@ city::city(){
 	}
 
 
-	move();
-	//auto_move();
+	//move();
+	auto_move();
 }
 
 
@@ -330,13 +330,188 @@ void city::move(){
 }
 
 
+void city::auto_move(){
+	mapa.resize(x_+1);
+	for(int i = 1; i < x_+1; i++) {
+		mapa[i].resize(y_+1);
+		for(int j = 0; j < y_+1; j++)
+			mapa[i][j] = false;
+	}
+
+        bool nollego=true;
+        bool nosalir=true;
+
+        mov='e';
+        int x_tem,y_tem;
+        do{
+                if(metropolis)imprimir_metropolis();
+                else imprimir();
+
+                x_tem=x_car;
+                y_tem=y_car;
+
+
+        	usleep(250000);
+
+                mov=get_next_move();
+
+
+                switch(mov) {
+                        case 'w':x_tem-=1;break;
+                        case 'a':y_tem-=1;break;
+                        case 's':x_tem+=1;break;
+                        case 'd':y_tem+=1;break;
+
+                        case 'i':
+                                if(x_mo>0){
+                                        x_mo--;
+                                        x_mm--;
+                                }
+                                break;
+
+                        case 'j':
+                                if(y_mo>0){
+                                        y_mo--;
+                                        y_mm--;
+                                }
+                                break;
+                        case 'k':
+                                if(x_mm<x_){
+                                        x_mo++;
+                                        x_mm++;
+                                }
+                                break;
+                        case 'l':
+                                if(y_mm<y_){
+                                        y_mo++;
+                                        y_mm++;
+                                }
+                                break;
+
+                        case 'q': nosalir=false;
+                }
+                mov='e';
+
+                if(c_[x_tem][y_tem]==1){
+                        c_[x_car][y_car]=1;
+                        c_[x_tem][y_tem]=3;
+                        x_car=x_tem;
+                        y_car=y_tem;
+                }
+                else if(c_[x_tem][y_tem]==4){
+                        nollego=false;
+                }
+
+
+        }while(nollego & nosalir);
+
+        if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
+}
+
+
+char city::get_next_move() {
+	char move;
+	std::vector<int> aux;
+	std::vector<std::vector<int> > opciones, opciones_aux;
+
+	if((get_val(x_car-1, y_car) == 1) || (get_val(x_car-1, y_car) == 4)) {
+		aux = {x_car-1, y_car};
+		opciones.push_back(aux);
+	}
+	if((get_val(x_car+1, y_car) == 1) || (get_val(x_car+1, y_car) == 4)) {
+                aux = {x_car+1, y_car};
+                opciones.push_back(aux);
+        }
+	if((get_val(x_car, y_car-1) == 1) || (get_val(x_car, y_car-1) == 4)) {
+                aux = {x_car, y_car-1};
+                opciones.push_back(aux);
+        }
+	if((get_val(x_car, y_car+1) == 1) || (get_val(x_car, y_car+1) == 4)) {
+                aux = {x_car, y_car+1};
+                opciones.push_back(aux);
+        }
+
+	std::vector<bool> borrar;
+	borrar.resize(opciones.size());
+	for(int i = 1; i < opciones.size(); i++) {
+		if(mapa[opciones[i][0]][opciones[i][1]])
+			borrar[i] = true;
+	}
+	opciones_aux = opciones;
+	opciones.clear();
+	for(int i = 0; i < opciones_aux.size(); i++) {
+		if(!borrar[i])
+			opciones.push_back(opciones_aux[i]);
+	}
+	
+	
+		
+
+	for(int i = 0; i < opciones.size(); i++) {
+		posibilidades.push_back(opciones[i]);
+		mapa[opciones[i][0]][opciones[i][1]] = true;
+	}
+
+	if(!posibilidades.empty()) {
+		int min = 9999999;
+		int elegida = 0;
+		for(int i = 0; i < posibilidades.size(); i++)
+			if(f(posibilidades[i]) < min) {
+				min = f(posibilidades[i]);
+				elegida = i;
+			}
+		aux = encontrar_camino(posibilidades[elegida]);
+	}
+	else
+		move = 'n';
+
+	if(aux[0] == x_car)
+		if(aux[1] == y_car-1)
+			move = 'a';
+		else
+			move = 'd';
+	else
+		if(aux[0] == x_car-1)
+                        move = 'w';
+                else
+                        move = 's';
+
+					
+	return move;
+}
+
+
+int city::f(std::vector<int> casilla) {
+	return (abs(casilla[0] - x_v) - abs(casilla[1] - y_v));
+}
+
+
+std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
+	std::set<recorrido> lista;
+	recorrido aux;
+	aux.add(x_car, y_car);
+	lista.insert(aux);
+	while((lista.begin()->get_end() != objetivo) && (!lista.empty())) {
+		aux = *lista.begin();
+		lista.erase(lista.begin());
+	}
+}
+
+
+
+
 recorrido::recorrido() {
-	Coste = 0;
+	Coste = -1;
+}
+
+
+std::vector<int> recorrido::get_end() const {
+	return Camino.back();
 }
 
 
 void recorrido::add(int x, int y) {
-	std_vector<int> aux = {x, y};
+	std::vector<int> aux = {x, y};
 	Camino.push_back(aux);
 	Coste++;
 }
@@ -353,12 +528,12 @@ bool recorrido::existe(int x, int y) {
 
 
 bool recorrido::operator<(const recorrido& rec) const {
-	return (Coste < rec.coste);
+	return (Coste < rec.Coste);
 }
 
 
 bool recorrido::operator>(const recorrido& rec) const {
-        return (Coste > rec.coste);
+        return (Coste > rec.Coste);
 }
 
 

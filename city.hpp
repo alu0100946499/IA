@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <fstream>
+#include <set>
 
 #include <ncurses.h>
 #include <unistd.h>
@@ -42,6 +43,9 @@ class city{
 
 	bool manual;
 
+	std::vector<std::vector<bool> > mapa;
+	std::vector<std::vector<int> > posibilidades;
+
 	std::vector<std::string> col={KGRN,     KWHT,     KRED,          KBLU,     KYEL,	KSYEL};
 	//							  lados  -  fondo  -  obstaculos  -  coche  -  final -  excavadora
 	//							  0         1         2              3         4		5
@@ -64,6 +68,10 @@ public:
 
 	void move();
 	void auto_move();
+	char get_next_move();
+
+	int f(std::vector<int>);
+	std::vector<int> encontrar_camino(std::vector<int>);
 };
 
 
@@ -74,13 +82,14 @@ class recorrido {
 public:
 
 	recorrido();
+	std::vector<int> get_end() const;
 	void add(int, int);
 	bool existe(int, int);
 
 	bool operator<(const recorrido&) const;
 	bool operator>(const recorrido&) const;
 	bool operator==(const recorrido&) const;
-}
+};
 
 
 
