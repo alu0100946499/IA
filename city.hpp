@@ -82,8 +82,10 @@ class recorrido {
 public:
 
 	recorrido();
+	std::vector<int> get_first() const;
 	std::vector<int> get_end() const;
 	void add(int, int);
+	recorrido create(int, int);
 	bool existe(int, int);
 
 	bool operator<(const recorrido&) const;

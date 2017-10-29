@@ -331,81 +331,93 @@ void city::move(){
 
 
 void city::auto_move(){
-	mapa.resize(x_+1);
-	for(int i = 1; i < x_+1; i++) {
-		mapa[i].resize(y_+1);
-		for(int j = 0; j < y_+1; j++)
+	mapa.resize(x_+2);
+	for(int i = 0; i < x_+2; i++) {
+		mapa[i].resize(y_+2);
+		for(int j = 0; j < y_+2; j++)
 			mapa[i][j] = false;
 	}
+	mapa[x_car][y_car] = true;
 
-        bool nollego=true;
-        bool nosalir=true;
+	bool nollego=true;
+	bool nosalir=true;
 
-        mov='e';
-        int x_tem,y_tem;
-        do{
-                if(metropolis)imprimir_metropolis();
-                else imprimir();
+	mov='e';
+	int x_tem,y_tem;
+	do{
+		//if(metropolis)imprimir_metropolis();
+		//else imprimir();
 
-                x_tem=x_car;
-                y_tem=y_car;
-
-
-        	usleep(250000);
-
-                mov=get_next_move();
+		x_tem=x_car;
+		y_tem=y_car;
 
 
-                switch(mov) {
-                        case 'w':x_tem-=1;break;
-                        case 'a':y_tem-=1;break;
-                        case 's':x_tem+=1;break;
-                        case 'd':y_tem+=1;break;
+		//usleep(250000);
+		std::cin >> mov;
 
-                        case 'i':
-                                if(x_mo>0){
-                                        x_mo--;
-                                        x_mm--;
-                                }
-                                break;
-
-                        case 'j':
-                                if(y_mo>0){
-                                        y_mo--;
-                                        y_mm--;
-                                }
-                                break;
-                        case 'k':
-                                if(x_mm<x_){
-                                        x_mo++;
-                                        x_mm++;
-                                }
-                                break;
-                        case 'l':
-                                if(y_mm<y_){
-                                        y_mo++;
-                                        y_mm++;
-                                }
-                                break;
-
-                        case 'q': nosalir=false;
-                }
-                mov='e';
-
-                if(c_[x_tem][y_tem]==1){
-                        c_[x_car][y_car]=1;
-                        c_[x_tem][y_tem]=3;
-                        x_car=x_tem;
-                        y_car=y_tem;
-                }
-                else if(c_[x_tem][y_tem]==4){
-                        nollego=false;
-                }
+		mov=get_next_move();
 
 
-        }while(nollego & nosalir);
+		switch(mov) {
+			case 'w':x_tem-=1;break;
+			case 'a':y_tem-=1;break;
+			case 's':x_tem+=1;break;
+			case 'd':y_tem+=1;break;
 
-        if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
+			case 'i':
+				if(x_mo>0){
+					x_mo--;
+					x_mm--;
+				}
+				break;
+
+			case 'j':
+				if(y_mo>0){
+					y_mo--;
+					y_mm--;
+				}
+				break;
+			case 'k':
+				if(x_mm<x_){
+					x_mo++;
+					x_mm++;
+				}
+				break;
+			case 'l':
+				if(y_mm<y_){
+					y_mo++;
+					y_mm++;
+				}
+				break;
+
+			case 'q': nosalir=false;
+		}
+		mov='e';
+
+		if(c_[x_tem][y_tem]==1){
+			c_[x_car][y_car]=1;
+			c_[x_tem][y_tem]=3;
+			x_car=x_tem;
+			y_car=y_tem;
+		}
+		else if(c_[x_tem][y_tem]==4){
+			nollego=false;
+		}
+		
+		bool found = false;
+		int i = 0;
+		while((i < posibilidades.size()) && (!found)) {
+			if((posibilidades[i][0] == x_car) && (posibilidades[i][1] == y_car))
+				found = true;
+			i++;
+		}
+		if(found) posibilidades.erase(posibilidades.begin() + i - 1);
+
+
+	} while(nollego & nosalir);
+	
+
+	if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
 }
 
 
@@ -419,21 +431,21 @@ char city::get_next_move() {
 		opciones.push_back(aux);
 	}
 	if((get_val(x_car+1, y_car) == 1) || (get_val(x_car+1, y_car) == 4)) {
-                aux = {x_car+1, y_car};
-                opciones.push_back(aux);
-        }
+		aux = {x_car+1, y_car};
+		opciones.push_back(aux);
+    }
 	if((get_val(x_car, y_car-1) == 1) || (get_val(x_car, y_car-1) == 4)) {
-                aux = {x_car, y_car-1};
-                opciones.push_back(aux);
-        }
+		aux = {x_car, y_car-1};
+		opciones.push_back(aux);
+    }
 	if((get_val(x_car, y_car+1) == 1) || (get_val(x_car, y_car+1) == 4)) {
-                aux = {x_car, y_car+1};
-                opciones.push_back(aux);
-        }
+		aux = {x_car, y_car+1};
+		opciones.push_back(aux);
+    }
 
 	std::vector<bool> borrar;
 	borrar.resize(opciones.size());
-	for(int i = 1; i < opciones.size(); i++) {
+	for(int i = 0; i < opciones.size(); i++) {
 		if(mapa[opciones[i][0]][opciones[i][1]])
 			borrar[i] = true;
 	}
@@ -444,13 +456,16 @@ char city::get_next_move() {
 			opciones.push_back(opciones_aux[i]);
 	}
 	
-	
-		
 
 	for(int i = 0; i < opciones.size(); i++) {
 		posibilidades.push_back(opciones[i]);
 		mapa[opciones[i][0]][opciones[i][1]] = true;
 	}
+
+	for(int i = 0; i < posibilidades.size(); i++) {
+		std::cout << posibilidades[i][0] << ',' << posibilidades[i][1] << "  ";
+	}
+	std::cout << '\n';
 
 	if(!posibilidades.empty()) {
 		int min = 9999999;
@@ -465,24 +480,28 @@ char city::get_next_move() {
 	else
 		move = 'n';
 
-	if(aux[0] == x_car)
+	std::cout << aux[0] << ',' << aux[1] << std::endl;
+	if(aux[0] == x_car) {
 		if(aux[1] == y_car-1)
 			move = 'a';
-		else
+		else if(aux[1] == y_car+1)
 			move = 'd';
+	}
 	else
 		if(aux[0] == x_car-1)
-                        move = 'w';
-                else
-                        move = 's';
-
-					
+            move = 'w';
+        else if(aux[0] == x_car+1)
+            move = 's';
+		
+	std::cout << "MOVIMIENTO: " << move << std::endl;
+	
+	
 	return move;
 }
 
 
 int city::f(std::vector<int> casilla) {
-	return (abs(casilla[0] - x_v) - abs(casilla[1] - y_v));
+	return (abs(casilla[0] - x_v) + abs(casilla[1] - y_v));
 }
 
 
@@ -491,10 +510,27 @@ std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
 	recorrido aux;
 	aux.add(x_car, y_car);
 	lista.insert(aux);
+	std::cout << x_car << ',' << y_car << "   " << x_v << ',' << y_v << "   " << objetivo[0] << ',' << objetivo[1] << '\n';
+	
 	while((lista.begin()->get_end() != objetivo) && (!lista.empty())) {
 		aux = *lista.begin();
 		lista.erase(lista.begin());
+		std::cout << "mapa[" << aux.get_end()[0]<< "][" << aux.get_end()[1] << ']' << std::endl;
+		if(mapa[aux.get_end()[0] - 1][aux.get_end()[1]] && !aux.existe(aux.get_end()[0] - 1, aux.get_end()[1]))
+			lista.insert(aux.create(aux.get_end()[0] - 1, aux.get_end()[1]));
+		if(mapa[aux.get_end()[0] + 1][aux.get_end()[1]] && !aux.existe(aux.get_end()[0] + 1, aux.get_end()[1]))
+			lista.insert(aux.create(aux.get_end()[0] + 1, aux.get_end()[1]));
+		if(mapa[aux.get_end()[0]][aux.get_end()[1] - 1] && !aux.existe(aux.get_end()[0], aux.get_end()[1] - 1))
+			lista.insert(aux.create(aux.get_end()[0], aux.get_end()[1] - 1));
+		if(mapa[aux.get_end()[0]][aux.get_end()[1] + 1] && !aux.existe(aux.get_end()[0], aux.get_end()[1] + 1))
+			lista.insert(aux.create(aux.get_end()[0], aux.get_end()[1] + 1));
 	}
+	
+	if(lista.empty()) std::cout << "ALGO VA MAL, LAS POSIBILIDADES DEBEN ESTAR EN EL MAPA" << std::endl;
+	
+	return lista.begin()->get_first();
+	//std::vector<int> bbb = {1,1};
+	//return bbb;
 }
 
 
@@ -502,6 +538,11 @@ std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
 
 recorrido::recorrido() {
 	Coste = -1;
+}
+
+
+std::vector<int> recorrido::get_first() const {
+	return Camino[1];
 }
 
 
@@ -517,6 +558,17 @@ void recorrido::add(int x, int y) {
 }
 
 
+recorrido recorrido::create(int x, int y) {
+	recorrido rec;
+	rec.Camino = Camino;
+	std::vector<int> aux = {x, y};
+	rec.Camino.push_back(aux);
+	rec.Coste = Coste + 1;
+
+	return rec;
+}
+
+
 bool recorrido::existe(int x, int y) {
 	bool existe = false;
 	for(int i = 0; i < Camino.size(); i++)
@@ -528,20 +580,48 @@ bool recorrido::existe(int x, int y) {
 
 
 bool recorrido::operator<(const recorrido& rec) const {
-	return (Coste < rec.Coste);
+	if(Coste != rec.Coste)
+       return (Coste < rec.Coste);
+	// si el coste es igual no importa el orden, pero hace falta criterio para que el set no los vea como iguales
+	else {
+		for(int i = 0; i < Camino.size(); i++) {
+			if(Camino[i][0] < rec.Camino[i][0])
+				return true;
+			else if(Camino[i][0] > rec.Camino[i][0])
+				return false;
+			if(Camino[i][1] < rec.Camino[i][1])
+				return true;
+			else if(Camino[i][1] > rec.Camino[i][1])
+				return false;
+		}
+	}
 }
 
 
 bool recorrido::operator>(const recorrido& rec) const {
-        return (Coste > rec.Coste);
+	if(Coste != rec.Coste)
+       return (Coste > rec.Coste);
+	// si el coste es igual no importa el orden, pero hace falta criterio para que el set no los vea como iguales
+	else {
+		for(int i = 0; i < Camino.size(); i++) {
+			if(Camino[i][0] > rec.Camino[i][0])
+				return true;
+			else if(Camino[i][0] < rec.Camino[i][0])
+				return false;
+			if(Camino[i][1] > rec.Camino[i][1])
+				return true;
+			else if(Camino[i][1] < rec.Camino[i][1])
+				return false;
+		}
+	}
 }
 
 
 bool recorrido::operator==(const recorrido& rec) const {
 	bool iguales = true;
 	for(int i = 0; i < Camino.size(); i++)
-                if((Camino[i][0] != rec.Camino[i][0]) || (Camino[i][1] != rec.Camino[i][1]))
-                        iguales = false;
+		if((Camino[i][0] != rec.Camino[i][0]) || (Camino[i][1] != rec.Camino[i][1]))
+			iguales = false;
 
 	return iguales;
 }
