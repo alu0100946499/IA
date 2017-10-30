@@ -345,15 +345,15 @@ void city::auto_move(){
 	mov='e';
 	int x_tem,y_tem;
 	do{
-		//if(metropolis)imprimir_metropolis();
-		//else imprimir();
+		if(metropolis)imprimir_metropolis();
+		else imprimir();
 
 		x_tem=x_car;
 		y_tem=y_car;
 
 
-		//usleep(250000);
-		std::cin >> mov;
+		usleep(100000);
+		//std::cin >> mov;
 
 		mov=get_next_move();
 
@@ -390,7 +390,7 @@ void city::auto_move(){
 				}
 				break;
 
-			case 'q': nosalir=false;
+			case 'n': nosalir=false;
 		}
 		mov='e';
 
@@ -418,12 +418,13 @@ void city::auto_move(){
 	
 
 	if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
+	else std::cout<<"No se puede llegar al destino\n";
 }
 
 
 char city::get_next_move() {
 	char move;
-	std::vector<int> aux;
+	std::vector<int> aux, victoria = {x_v, y_v}, car = {x_car, y_car};
 	std::vector<std::vector<int> > opciones, opciones_aux;
 
 	if((get_val(x_car-1, y_car) == 1) || (get_val(x_car-1, y_car) == 4)) {
@@ -462,17 +463,13 @@ char city::get_next_move() {
 		mapa[opciones[i][0]][opciones[i][1]] = true;
 	}
 
-	for(int i = 0; i < posibilidades.size(); i++) {
-		std::cout << posibilidades[i][0] << ',' << posibilidades[i][1] << "  ";
-	}
-	std::cout << '\n';
 
 	if(!posibilidades.empty()) {
 		int min = 9999999;
 		int elegida = 0;
 		for(int i = 0; i < posibilidades.size(); i++)
-			if(f(posibilidades[i]) < min) {
-				min = f(posibilidades[i]);
+			if(f(posibilidades[i], victoria) + f(car, posibilidades[i])/2 < min) {
+				min = f(posibilidades[i], victoria) + f(car, posibilidades[i])/2;
 				elegida = i;
 			}
 		aux = encontrar_camino(posibilidades[elegida]);
@@ -480,7 +477,6 @@ char city::get_next_move() {
 	else
 		move = 'n';
 
-	std::cout << aux[0] << ',' << aux[1] << std::endl;
 	if(aux[0] == x_car) {
 		if(aux[1] == y_car-1)
 			move = 'a';
@@ -492,16 +488,14 @@ char city::get_next_move() {
             move = 'w';
         else if(aux[0] == x_car+1)
             move = 's';
-		
-	std::cout << "MOVIMIENTO: " << move << std::endl;
 	
 	
 	return move;
 }
 
 
-int city::f(std::vector<int> casilla) {
-	return (abs(casilla[0] - x_v) + abs(casilla[1] - y_v));
+int city::f(std::vector<int> casilla, std::vector<int> objetivo) {
+	return (abs(casilla[0] - objetivo[0]) + abs(casilla[1] - objetivo[1]));
 }
 
 
@@ -510,12 +504,11 @@ std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
 	recorrido aux;
 	aux.add(x_car, y_car);
 	lista.insert(aux);
-	std::cout << x_car << ',' << y_car << "   " << x_v << ',' << y_v << "   " << objetivo[0] << ',' << objetivo[1] << '\n';
+	//std::cout << x_car << ',' << y_car << "   " << x_v << ',' << y_v << "   " << objetivo[0] << ',' << objetivo[1] << '\n';
 	
 	while((lista.begin()->get_end() != objetivo) && (!lista.empty())) {
 		aux = *lista.begin();
 		lista.erase(lista.begin());
-		std::cout << "mapa[" << aux.get_end()[0]<< "][" << aux.get_end()[1] << ']' << std::endl;
 		if(mapa[aux.get_end()[0] - 1][aux.get_end()[1]] && !aux.existe(aux.get_end()[0] - 1, aux.get_end()[1]))
 			lista.insert(aux.create(aux.get_end()[0] - 1, aux.get_end()[1]));
 		if(mapa[aux.get_end()[0] + 1][aux.get_end()[1]] && !aux.existe(aux.get_end()[0] + 1, aux.get_end()[1]))
@@ -529,8 +522,6 @@ std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
 	if(lista.empty()) std::cout << "ALGO VA MAL, LAS POSIBILIDADES DEBEN ESTAR EN EL MAPA" << std::endl;
 	
 	return lista.begin()->get_first();
-	//std::vector<int> bbb = {1,1};
-	//return bbb;
 }
 
 

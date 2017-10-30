@@ -70,7 +70,7 @@ public:
 	void auto_move();
 	char get_next_move();
 
-	int f(std::vector<int>);
+	int f(std::vector<int>, std::vector<int>);
 	std::vector<int> encontrar_camino(std::vector<int>);
 };
 
