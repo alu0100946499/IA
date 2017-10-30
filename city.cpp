@@ -344,7 +344,7 @@ void city::auto_move(){
 
 	mov='e';
 	int x_tem,y_tem;
-	do{
+	do {
 		if(metropolis)imprimir_metropolis();
 		else imprimir();
 
@@ -352,7 +352,7 @@ void city::auto_move(){
 		y_tem=y_car;
 
 
-		usleep(100000);
+		usleep(90000);
 		//std::cin >> mov;
 
 		mov=get_next_move();
@@ -473,21 +473,22 @@ char city::get_next_move() {
 				elegida = i;
 			}
 		aux = encontrar_camino(posibilidades[elegida]);
+		
+		if(aux[0] == x_car) {
+			if(aux[1] == y_car-1)
+				move = 'a';
+			else if(aux[1] == y_car+1)
+				move = 'd';
+		}
+		else
+			if(aux[0] == x_car-1)
+				move = 'w';
+			else if(aux[0] == x_car+1)
+				move = 's';
 	}
 	else
 		move = 'n';
 
-	if(aux[0] == x_car) {
-		if(aux[1] == y_car-1)
-			move = 'a';
-		else if(aux[1] == y_car+1)
-			move = 'd';
-	}
-	else
-		if(aux[0] == x_car-1)
-            move = 'w';
-        else if(aux[0] == x_car+1)
-            move = 's';
 	
 	
 	return move;
