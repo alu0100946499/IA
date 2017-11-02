@@ -4,6 +4,7 @@
 city::city(){
 	srand(time(NULL));
 	int x, y;
+	std::string f;
 	std::cout<<"Filas: ";
 	std::cin>>x;
 	x_=x;
@@ -11,7 +12,25 @@ city::city(){
 	std::cin>>y;
 	y_=y;
 
-
+	getchar();
+	
+	do
+	{
+		std::cout << "Fórmula (Manhattan/Euclidea/Mahalanobis): ";
+		std::getline(std::cin, f);
+		
+		if ((f == "Manhattan") || (f == "manhattan"))
+			f_ = 1;
+		else if ((f == "Euclidea") || (f == "euclidea"))
+			f_ = 2;
+		else if ((f == "Mahalanobis") || (f == "mahalanobis"))
+			f_ = 3;
+		else
+		{
+			f_ = 0;
+			std::cout << "Fórmula errónea" << std::endl;
+		}
+	}while(f_ == 0);
 
 
 	if(x_>ALTO | y_>ANCHO)metropolis=true;
@@ -332,6 +351,8 @@ void city::move(){
 
 
 void city::auto_move(){
+	n_movimientos = 0;
+	
 	mapa.resize(x_+2);
 	for(int i = 0; i < x_+2; i++) {
 		mapa[i].resize(y_+2);
@@ -357,6 +378,8 @@ void city::auto_move(){
 		//std::cin >> mov;
 
 		mov=get_next_move();
+		if(mov != 'n')
+			n_movimientos++;
 
 
 		switch(mov) {
@@ -420,6 +443,8 @@ void city::auto_move(){
 
 	if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
 	else std::cout<<"No se puede llegar al destino\n";
+	
+	std::cout << col[0] << "Número de movimientos: " << n_movimientos << RST << '\n';
 }
 
 
@@ -466,11 +491,11 @@ char city::get_next_move() {
 
 
 	if(!posibilidades.empty()) {
-		int min = 9999999;
+		float min = INFINITY;
 		int elegida = 0;
 		for(int i = 0; i < posibilidades.size(); i++)
-			if(f(posibilidades[i], victoria) + f(car, posibilidades[i])/2 < min) {
-				min = f(posibilidades[i], victoria) + f(car, posibilidades[i])/2;
+			if(f(posibilidades[i], victoria, f_) + f(car, posibilidades[i], f_)/2 < min) {
+				min = f(posibilidades[i], victoria, f_) + f(car, posibilidades[i], f_)/2;
 				elegida = i;
 			}
 		aux = encontrar_camino(posibilidades[elegida]);
@@ -496,8 +521,19 @@ char city::get_next_move() {
 }
 
 
-int city::f(std::vector<int> casilla, std::vector<int> objetivo) {
-	return (abs(casilla[0] - objetivo[0]) + abs(casilla[1] - objetivo[1]));
+float city::f(std::vector<int> casilla, std::vector<int> objetivo, int formula) {
+	
+	switch(formula)
+	{
+		case 1: return (abs(casilla[0] - objetivo[0]) + abs(casilla[1] - objetivo[1]));break;
+		
+		case 2: return sqrt(pow(casilla[0] - objetivo[0], 2) + pow(casilla[1] - objetivo[1], 2)); break;
+		
+		case 3: return abs(casilla[0] - objetivo[0]) > abs(casilla[1] - objetivo[1])? abs(casilla[0] - objetivo[0]) : abs(casilla[1] - objetivo[1]); break;
+		
+		default: break;
+	}
+	
 }
 
 
@@ -506,7 +542,6 @@ std::vector<int> city::encontrar_camino(std::vector<int> objetivo) {
 	recorrido aux;
 	aux.add(x_car, y_car);
 	lista.insert(aux);
-	//std::cout << x_car << ',' << y_car << "   " << x_v << ',' << y_v << "   " << objetivo[0] << ',' << objetivo[1] << '\n';
 	
 	while((lista.begin()->get_end() != objetivo) && (!lista.empty())) {
 		aux = *lista.begin();

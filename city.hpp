@@ -8,6 +8,7 @@
 #include <time.h>
 #include <fstream>
 #include <set>
+#include <cmath>
 
 #include <ncurses.h>
 #include <unistd.h>
@@ -31,6 +32,7 @@ class city{
 
 	int x_;
 	int y_;
+	int f_;
 	int obs_;
 	int** c_;
 
@@ -44,6 +46,7 @@ class city{
 	int y_mo, y_mm;
 
 	bool manual;
+	int n_movimientos;
 
 	std::vector<std::vector<bool> > mapa;
 	std::vector<std::vector<int> > posibilidades;
@@ -72,7 +75,7 @@ public:
 	void auto_move();
 	char get_next_move();
 
-	int f(std::vector<int>, std::vector<int>);
+	float f(std::vector<int>, std::vector<int>, int);
 	std::vector<int> encontrar_camino(std::vector<int>);
 };
 
