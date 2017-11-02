@@ -351,6 +351,10 @@ void city::move(){
 
 
 void city::auto_move(){
+	
+	double t;
+	t = clock();
+	
 	n_movimientos = 0;
 	
 	mapa.resize(x_+2);
@@ -367,14 +371,14 @@ void city::auto_move(){
 	mov='e';
 	int x_tem,y_tem;
 	do {
-		if(metropolis)imprimir_metropolis();
-		else imprimir();
+		// if(metropolis)imprimir_metropolis();
+		// else imprimir();
 
 		x_tem=x_car;
 		y_tem=y_car;
 
 
-		usleep(90000);
+		// usleep(90000);
 		//std::cin >> mov;
 
 		mov=get_next_move();
@@ -440,11 +444,16 @@ void city::auto_move(){
 
 	} while(nollego & nosalir);
 	
+	t = clock() - t;
+	
 
 	if(!nollego)std::cout<<col[4]<<"GANASTE\n\tGANASTE\n\t\tGANASTE\n\t\t\tGANASTE\n\t\t\t\tGANASTE\n"<<RST;
 	else std::cout<<"No se puede llegar al destino\n";
 	
-	std::cout << col[0] << "Número de movimientos: " << n_movimientos << RST << '\n';
+	std::cout << col[0] << "Número de movimientos: " << n_movimientos << RST << "\n";
+	
+
+	std::cout << "El algoritmo tardó: " << 	t / (double) CLOCKS_PER_SEC << " segundos\n";
 }
 
 
