@@ -12,6 +12,8 @@
 #include <ncurses.h>
 #include <unistd.h>
 
+#include "recorrido.hpp"
+
 #define KGRN  "\x1B[32m"
 #define KWHT  "\x1B[37m"
 #define KYEL  "\x1B[33m"
@@ -72,25 +74,6 @@ public:
 
 	int f(std::vector<int>, std::vector<int>);
 	std::vector<int> encontrar_camino(std::vector<int>);
-};
-
-
-class recorrido {
-	std::vector<std::vector<int> > Camino;
-	int Coste;
-
-public:
-
-	recorrido();
-	std::vector<int> get_first() const;
-	std::vector<int> get_end() const;
-	void add(int, int);
-	recorrido create(int, int);
-	bool existe(int, int);
-
-	bool operator<(const recorrido&) const;
-	bool operator>(const recorrido&) const;
-	bool operator==(const recorrido&) const;
 };
 
 
